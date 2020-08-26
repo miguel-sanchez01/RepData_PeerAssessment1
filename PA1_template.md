@@ -10,7 +10,8 @@ output:
 
 #### 1.1 Code for reading in the activityset and/or processing the activity
 
-```{r warning=FALSE, message=FALSE}
+
+```r
 #' Packages 
 library(dplyr)
 library(ggplot2)
@@ -29,7 +30,8 @@ activity <- activity %>% mutate(date = ymd(date))
 
 #### 2.1 Calculate the total number of steps taken per day
 
-```{r results='asis'}
+
+```r
 steps_days <- activity %>% 
   group_by(date) %>% 
   summarise(steps_days = sum(steps, na.rm = TRUE), .groups = 'drop')
@@ -37,10 +39,46 @@ knitr::kable(head(steps_days)) %>%
   kable_styling(bootstrap_options = "striped", full_width = F)
 ```
 
+<table class="table table-striped" style="width: auto !important; margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;"> date </th>
+   <th style="text-align:right;"> steps_days </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> 2012-10-01 </td>
+   <td style="text-align:right;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 2012-10-02 </td>
+   <td style="text-align:right;"> 126 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 2012-10-03 </td>
+   <td style="text-align:right;"> 11352 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 2012-10-04 </td>
+   <td style="text-align:right;"> 12116 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 2012-10-05 </td>
+   <td style="text-align:right;"> 13294 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 2012-10-06 </td>
+   <td style="text-align:right;"> 15420 </td>
+  </tr>
+</tbody>
+</table>
+
 
 #### 2.2 Histogram of the total number of steps taken each day
 
-```{r}
+
+```r
 ggplot(steps_days, aes(x = steps_days)) + 
   geom_histogram(bins = 30, color = 'white', fill = '#07575B') + 
   labs(
@@ -50,9 +88,12 @@ ggplot(steps_days, aes(x = steps_days)) +
   theme_bw()
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
+
 #### 2.3 Calculate and report the mean and median of the total number of steps taken per day
 
-```{r}
+
+```r
 mean_median_steps_per_day <- steps_days %>% 
   summarise(
     mean = mean(steps_days, na.rm = TRUE),
@@ -62,13 +103,29 @@ knitr::kable(mean_median_steps_per_day) %>%
   kable_styling(bootstrap_options = "striped", full_width = F)
 ```
 
+<table class="table table-striped" style="width: auto !important; margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:right;"> mean </th>
+   <th style="text-align:right;"> median </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:right;"> 9354.23 </td>
+   <td style="text-align:right;"> 10395 </td>
+  </tr>
+</tbody>
+</table>
+
 
 
 ## 3. What is the average daily activity pattern?
 
 #### 3.1 Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 
-```{r}
+
+```r
 interval_mean <- activity %>% 
   group_by(interval) %>% 
   summarise(mean = mean(steps, na.rm = TRUE), .groups = 'drop')
@@ -81,14 +138,32 @@ ggplot(interval_mean, aes(x = interval, y = mean)) +
   theme_bw()
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
+
 
 
 #### 3.2 Which 5-minute interval, on average across all the days in the activityset, contains the maximum number of steps?
 
-```{r}
+
+```r
 knitr::kable(interval_mean[which.max(interval_mean$mean), ]) %>% 
   kable_styling(bootstrap_options = "striped", full_width = F)
 ```
+
+<table class="table table-striped" style="width: auto !important; margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:right;"> interval </th>
+   <th style="text-align:right;"> mean </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:right;"> 835 </td>
+   <td style="text-align:right;"> 206.1698 </td>
+  </tr>
+</tbody>
+</table>
 
 
 
@@ -99,15 +174,21 @@ Note that there are a number of days/intervals where there are missing values (c
 
 #### 4.1 Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
 
-```{r}
+
+```r
 rows_na <- activity[!complete.cases(activity), ]
 nrow(rows_na)
+```
+
+```
+## [1] 2304
 ```
 
 
 #### 4.2 Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
 
-```{r}
+
+```r
 # Compute the mean for that 5-minute interval
 median_day_for_NA <- activity %>% 
   group_by(interval) %>% 
@@ -116,10 +197,46 @@ knitr::kable(head(median_day_for_NA)) %>%
   kable_styling(bootstrap_options = "striped", full_width = F)
 ```
 
+<table class="table table-striped" style="width: auto !important; margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:right;"> interval </th>
+   <th style="text-align:right;"> steps_NA </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:right;"> 1.7169811 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 5 </td>
+   <td style="text-align:right;"> 0.3396226 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 10 </td>
+   <td style="text-align:right;"> 0.1320755 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 15 </td>
+   <td style="text-align:right;"> 0.1509434 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 20 </td>
+   <td style="text-align:right;"> 0.0754717 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 25 </td>
+   <td style="text-align:right;"> 2.0943396 </td>
+  </tr>
+</tbody>
+</table>
+
 
 #### 4.3 Create a new dataset that is equal to the original dataset but with the missing data filled in.
 
-```{r}
+
+```r
 activity_NA <- data.frame()
 for (i in unique(activity$interval)) {
   aux <- activity %>% filter(interval == i)
@@ -136,10 +253,15 @@ for (i in unique(activity$interval)) {
 nrow(activity_NA[!complete.cases(activity_NA), ])
 ```
 
+```
+## [1] 0
+```
+
 
 #### 4.4 Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
 
-```{r}
+
+```r
 steps_days_NA <- activity_NA %>% 
   group_by(date) %>% 
   summarise(steps_days = sum(steps, na.rm = TRUE), .groups = 'drop')
@@ -150,6 +272,11 @@ ggplot(steps_days_NA, aes(x = steps_days)) +
     x = 'Total steps per day', y = ''
   ) + 
   theme_bw()
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
+
+```r
 mean_median_steps_per_day_NA <- steps_days_NA %>% 
   summarise(
     mean = mean(steps_days, na.rm = TRUE),
@@ -158,6 +285,21 @@ mean_median_steps_per_day_NA <- steps_days_NA %>%
 knitr::kable(mean_median_steps_per_day_NA) %>% 
   kable_styling(bootstrap_options = "striped", full_width = F)
 ```
+
+<table class="table table-striped" style="width: auto !important; margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:right;"> mean </th>
+   <th style="text-align:right;"> median </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:right;"> 10765.64 </td>
+   <td style="text-align:right;"> 10762 </td>
+  </tr>
+</tbody>
+</table>
 Mean and median values are higher after imputing missing data.
 
 
@@ -167,7 +309,8 @@ For this part the weekdays() function may be of some help here. Use the dataset 
 
 #### 5.1 Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
 
-```{r}
+
+```r
 activity_NA <- activity_NA %>% 
   mutate(
     day = weekdays(date),
@@ -177,10 +320,67 @@ knitr::kable(head(activity_NA)) %>%
   kable_styling(bootstrap_options = "striped", full_width = F)
 ```
 
+<table class="table table-striped" style="width: auto !important; margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:right;"> steps </th>
+   <th style="text-align:left;"> date </th>
+   <th style="text-align:right;"> interval </th>
+   <th style="text-align:left;"> day </th>
+   <th style="text-align:left;"> week_day </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 2012-10-01 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:left;"> Monday </td>
+   <td style="text-align:left;"> weekday </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:left;"> 2012-10-02 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:left;"> Tuesday </td>
+   <td style="text-align:left;"> weekday </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:left;"> 2012-10-03 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:left;"> Wednesday </td>
+   <td style="text-align:left;"> weekday </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 47 </td>
+   <td style="text-align:left;"> 2012-10-04 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:left;"> Thursday </td>
+   <td style="text-align:left;"> weekday </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:left;"> 2012-10-05 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:left;"> Friday </td>
+   <td style="text-align:left;"> weekday </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:left;"> 2012-10-06 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:left;"> Saturday </td>
+   <td style="text-align:left;"> weekend </td>
+  </tr>
+</tbody>
+</table>
+
 
 #### 5.2 Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). See the README file in the GitHub repository to see an example of what this plot should look like using simulated data.
 
-```{r}
+
+```r
 mean_steps <- activity_NA %>% 
   group_by(interval, week_day) %>% 
   summarise(average = mean(steps), .groups = 'drop')
@@ -191,5 +391,7 @@ ggplot(mean_steps, aes(x = interval, y = average)) +
     y = 'Average number of steps'
   ) + facet_grid(week_day ~ .) + theme_bw()
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-12-1.png)<!-- -->
 
 
